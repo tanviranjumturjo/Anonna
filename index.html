@@ -417,6 +417,28 @@
         </div>
     </div>
 
+    <!-- FIREBASE CONNECTION SETUP -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVbqrP4rb5wwqdMbQJNcwyi03f8n2HwRM",
+            authDomain: "our-diary-eef9d.firebaseapp.com",
+            projectId: "our-diary-eef9d",
+            storageBucket: "our-diary-eef9d.firebasestorage.app",
+            messagingSenderId: "292270442939",
+            appId: "1:292270442939:web:2bfd95d5b904eb62f05c9e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        
+        // Expose Firebase globally so your other JS files can use it easily
+        window.db = getDatabase(app);
+        window.fb = { ref, push, onValue, remove, set };
+    </script>
+
     <!-- Scripts (Proper Folder Paths) -->
     <script src="./js/particles.js"></script>
     <script src="./js/audio.js"></script>
