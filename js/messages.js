@@ -1,38 +1,9 @@
 /* ==========================================================================
-   FOR ANONNA BRISTY - TIME CAPSULE & MESSAGE BOARD
-   Interactive glowing notes, timestamps, heart counters & local storage
+   FOR ANONNA BRISTY - TIME CAPSULE & MESSAGE BOARD (CLOUD EDITION)
+   Interactive glowing notes, timestamps, heart counters & real-time sync
    ========================================================================== */
 
 const MessagesModule = (function () {
-    const STORAGE_KEY = 'anonna_time_capsule_notes';
-
-    const defaultNotes = [
-        {
-            id: 'note-1',
-            author: 'Always Yours',
-            text: 'To Anonna — You are the quiet peace in my noisy world, the gentle rain after a long dry summer.',
-            color: 'rose',
-            likes: 12,
-            timestamp: new Date(Date.now() - 86400000 * 2).toISOString()
-        },
-        {
-            id: 'note-2',
-            author: 'Forever & Always',
-            text: 'I promise to stand by you in every quiet evening, holding your hand through all life’s seasons.',
-            color: 'wine',
-            likes: 8,
-            timestamp: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-            id: 'note-3',
-            author: 'Your Sanctuary',
-            text: 'No matter where life takes us, this digital space will always remain our private home of love.',
-            color: 'blush',
-            likes: 15,
-            timestamp: new Date().toISOString()
-        }
-    ];
-
     let notes = [];
 
     // DOM Elements
@@ -41,28 +12,43 @@ const MessagesModule = (function () {
     const noteAuthorInput = document.getElementById('note-author');
     const noteTextInput = document.getElementById('note-text');
 
-    function init() {
-        loadNotes();
-        renderNotes();
-        setupEventListeners();
-    }
-
-    function loadNotes() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            try {
-                notes = JSON.parse(stored);
-            } catch (e) {
-                notes = [...defaultNotes];
-            }
+    // Wait for the Firebase module to finish loading from index.html
+    function waitForFirebase(callback) {
+        if (window.db && window.fb) {
+            callback();
         } else {
-            notes = [...defaultNotes];
-            saveNotes();
+            setTimeout(() => waitForFirebase(callback), 100);
         }
     }
 
-    function saveNotes() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    function init() {
+        waitForFirebase(() => {
+            setupFirebaseListener();
+            setupEventListeners();
+        });
+    }
+
+    function setupFirebaseListener() {
+        const notesRef = window.fb.ref(window.db, 'notes');
+        
+        // This listens to the cloud. Any time a note is added or deleted, it auto-updates!
+        window.fb.onValue(notesRef, (snapshot) => {
+            const data = snapshot.val();
+            notes = [];
+            
+            if (data) {
+                // Convert Firebase object into an array
+                for (let key in data) {
+                    notes.push({
+                        id: key, 
+                        ...data[key]
+                    });
+                }
+                // Sort by time (newest at the top)
+                notes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+            renderNotes();
+        });
     }
 
     function renderNotes() {
@@ -89,7 +75,7 @@ const MessagesModule = (function () {
                         <span class="note-time">${formatTimeAgo(note.timestamp)}</span>
                     </div>
                     <div class="note-actions">
-                        <button class="heart-btn-note ${note.liked ? 'liked' : ''}" data-id="${note.id}">
+                        <button class="heart-btn-note" data-id="${note.id}">
                             ❤️ <span class="like-count">${note.likes || 0}</span>
                         </button>
                         <button class="delete-note-btn" data-id="${note.id}" title="Delete Note">🗑️</button>
@@ -97,23 +83,21 @@ const MessagesModule = (function () {
                 </div>
             `;
 
-            // Heart reaction
+            // Heart reaction (Updates instantly in the cloud)
             const heartBtn = card.querySelector('.heart-btn-note');
             heartBtn.addEventListener('click', () => {
-                note.likes = (note.likes || 0) + (note.liked ? -1 : 1);
-                note.liked = !note.liked;
-                saveNotes();
-                renderNotes();
-                SoundFX.playClickSound();
+                const newLikes = (note.likes || 0) + 1; 
+                const likeRef = window.fb.ref(window.db, 'notes/' + note.id + '/likes');
+                window.fb.set(likeRef, newLikes);
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
 
-            // Delete note
+            // Delete note (Deletes instantly from the cloud)
             const deleteBtn = card.querySelector('.delete-note-btn');
             deleteBtn.addEventListener('click', () => {
-                notes = notes.filter(n => n.id !== note.id);
-                saveNotes();
-                renderNotes();
-                SoundFX.playClickSound();
+                const noteRef = window.fb.ref(window.db, 'notes/' + note.id);
+                window.fb.remove(noteRef);
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
 
             notesGrid.appendChild(card);
@@ -121,7 +105,6 @@ const MessagesModule = (function () {
     }
 
     function setupEventListeners() {
-        // Color picker radio selection style update
         const colorOptions = document.querySelectorAll('.color-option');
         colorOptions.forEach(opt => {
             opt.addEventListener('click', () => {
@@ -130,7 +113,6 @@ const MessagesModule = (function () {
             });
         });
 
-        // Form submit
         if (noteForm) {
             noteForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -141,21 +123,19 @@ const MessagesModule = (function () {
                 if (!author || !text) return;
 
                 const newNote = {
-                    id: 'note-' + Date.now(),
                     author: author,
                     text: text,
                     color: selectedColor,
                     likes: 1,
-                    liked: true,
                     timestamp: new Date().toISOString()
                 };
 
-                notes.unshift(newNote);
-                saveNotes();
-                renderNotes();
+                // Push new note directly to Firebase
+                const notesRef = window.fb.ref(window.db, 'notes');
+                window.fb.push(notesRef, newNote);
 
                 noteTextInput.value = '';
-                SoundFX.playUnlockChime();
+                if (window.SoundFX) window.SoundFX.playUnlockChime();
             });
         }
     }
