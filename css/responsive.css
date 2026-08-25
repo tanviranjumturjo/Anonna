@@ -1,0 +1,118 @@
+/* ==========================================================================
+   FOR ANONNA BRISTY - RESPONSIVE STYLESHEET
+   ========================================================================== */
+
+/* Laptop & Tablet (Up to 1024px) */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 3.2rem;
+    }
+
+    .hero-subtext {
+        font-size: 1.8rem;
+    }
+
+    .gallery-masonry {
+        column-count: 2;
+    }
+
+    .time-capsule-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .note-form-card {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+/* Tablet & Mobile (Up to 768px) */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 12px 18px;
+    }
+
+    .nav-links {
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .nav-actions {
+        right: 12px;
+    }
+
+    .hero-section {
+        padding: 110px 18px 60px;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtext {
+        font-size: 1.4rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .section-container {
+        padding: 60px 18px;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+    }
+
+    .gallery-masonry {
+        column-count: 1;
+    }
+
+    .letters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reels-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-card {
+        padding: 24px;
+    }
+}
+
+/* Mobile Small (Up to 480px) */
+@media (max-width: 480px) {
+    .lock-card {
+        padding: 30px 20px;
+    }
+
+    .lock-title {
+        font-size: 1.8rem;
+    }
+
+    .hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

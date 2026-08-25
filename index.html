@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanvir And Anonna's Diary — Moments, Words & Memories</title>
+    <meta name="description" content="A modern, deeply aesthetic, romantic digital sanctuary for Tanvir and Anonna.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="locked">
+
+    <!-- Ambient Floating Particle & Glowing Bokeh Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- FIXED PASSWORD GATEWAY (SCREEN LOCK) -->
+    <section id="lock-screen" class="lock-screen-container">
+        <div class="glass-card lock-card">
+            <div class="lock-icon-glow">
+                <div class="heart-pulse">❤️</div>
+            </div>
+            
+            <span class="lock-badge">SANCTUARY LOCK</span>
+            <h1 class="lock-title">Tanvir And Anonna's Diary</h1>
+            <p class="lock-subtitle">Enter our secret passcode to step inside our digital sanctuary.</p>
+
+            <form id="lock-form" onsubmit="return false;">
+                <div class="input-wrapper">
+                    <input type="password" id="passcode-input" placeholder="Enter secret passcode..." autocomplete="current-password" required>
+                    <button type="button" id="toggle-password-btn" title="Toggle Visibility">👁️</button>
+                </div>
+                
+                <button type="submit" id="unlock-btn" class="btn btn-primary">
+                    <span class="btn-text">Unlock Sanctuary</span>
+                    <span class="btn-icon">✨</span>
+                </button>
+            </form>
+
+            <div id="lock-error-msg" class="error-msg">Incorrect passcode. Try again, my love.</div>
+
+            <div class="lock-hint-container">
+                <button type="button" id="hint-toggle-btn" class="hint-btn">💡 Need a clue?</button>
+                <div id="hint-box" class="hint-box hidden">
+                    <p>✨ <em>Hint:</em> The day she said yes... 💕</p>
+                </div>
+            </div>
+
+            <div class="lock-quote-ticker">
+                <p id="lock-quote">"Even when words are quiet, love speaks softly."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN APP WRAPPER (Revealed upon passcode entry) -->
+    <main id="main-app" class="main-app-hidden">
+
+        <!-- NAVIGATION BAR -->
+        <header class="glass-nav">
+            <div class="nav-container">
+
+                <nav class="nav-links" id="nav-links">
+                    <a href="#hero" class="nav-link active">Home</a>
+                    <a href="#letters" class="nav-link">Love Letters</a>
+                    <a href="#gallery" class="nav-link">Memories</a>
+                    <a href="#reels" class="nav-link">Reels</a>
+                    <a href="#messages" class="nav-link">Time Capsule</a>
+                </nav>
+
+                <div class="nav-actions">
+                    <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound FX">
+                        <span id="sound-icon">🔔</span>
+                    </button>
+                    <button id="relock-btn" class="icon-btn" title="Lock Sanctuary">
+                        🔒
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge animate-fade-down">
+                    <span class="sparkle">✨</span> Our Private Haven of Love <span class="sparkle">✨</span>
+                </div>
+                <h1 class="hero-title animate-fade-up">
+                    <span class="text-gradient">Tanvir And Anonna's Diary</span>
+                    <span class="hero-subtext">Moments, Words & Memories</span>
+                </h1>
+                <p class="hero-subtitle animate-fade-up delay-1">
+                    "Even when words are quiet, love speaks softly. In every silence and every song, my heart echoes your name."
+                </p>
+
+                <div class="hero-cta-group animate-fade-up delay-2">
+                    <a href="#letters" class="btn btn-primary">
+                        <span>Read Love Letters</span> 💌
+                    </a>
+                    <a href="#gallery" class="btn btn-secondary">
+                        <span>Explore Gallery</span> 🖼️
+                    </a>
+                    <a href="#messages" class="btn btn-outline">
+                        <span>Time Capsule</span> ⏳
+                    </a>
+                </div>
+
+                <div class="hero-stats animate-fade-up delay-3">
+                    <div class="stat-card glass-card">
+                        <span class="stat-value" id="days-count">∞</span>
+                        <span class="stat-label">Days of Love</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-value">1,000,000+</span>
+                        <span class="stat-label">Shared Moments</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-value">Forever</span>
+                        <span class="stat-label">Unspoken Bond</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOVE LETTERS & QUOTES SECTION -->
+        <section id="letters" class="section-container">
+            <div class="section-header">
+                <span class="section-tag">WHISPERS & WORDS</span>
+                <h2 class="section-title">Love Letters</h2>
+                <p class="section-subtitle">Read gentle notes, flip through personal letters, and savor the feelings written just for you.</p>
+                <div class="letters-action-bar" style="margin-top: 20px;">
+                    <button id="open-letter-modal-btn" class="btn btn-primary">
+                        <span>Write New Love Letter</span> ✍️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">All Letters</button>
+                <button class="tab-btn" data-filter="letters">Deep Letters</button>
+                <button class="tab-btn" data-filter="bonds">Unspoken Bonds</button>
+                <button class="tab-btn" data-filter="promises">Promises</button>
+            </div>
+
+            <!-- Letters Grid -->
+            <div class="letters-grid" id="letters-grid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- SHARED PHOTO GALLERY SECTION -->
+        <section id="gallery" class="section-container">
+            <div class="section-header">
+                <span class="section-tag">VISUAL CHRONICLES</span>
+                <h2 class="section-title">Our Shared Memory Wall</h2>
+                <p class="section-subtitle">Moments frozen in time, forever cherished in our digital vault.</p>
+
+                <div class="gallery-action-bar">
+                    <button id="open-upload-modal-btn" class="btn btn-primary">
+                        <span>Upload New Memory</span> 📸
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gallery Masonry Grid -->
+            <div class="gallery-masonry" id="gallery-grid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- INSTAGRAM REELS SHOWCASE SECTION -->
+        <section id="reels" class="section-container">
+            <div class="section-header">
+                <span class="section-tag">REELS & SONGS</span>
+                <h2 class="section-title">Instagram Reels Showcase</h2>
+                <p class="section-subtitle">Our favorite short clips, funny moments, and romantic reels saved together.</p>
+
+                <div class="reels-action-bar">
+                    <button id="open-reel-modal-btn" class="btn btn-secondary">
+                        <span>Add New Reel Link</span> 🎬
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reels Showcase Grid -->
+            <div class="reels-grid" id="reels-grid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- MESSAGE BOX / TIME CAPSULE SECTION -->
+        <section id="messages" class="section-container">
+            <div class="section-header">
+                <span class="section-tag">TIME CAPSULE</span>
+                <h2 class="section-title">Whisper Note & Message Board</h2>
+                <p class="section-subtitle">Type a note, leave a wish, or post a memory to remain glowing here forever.</p>
+            </div>
+
+            <div class="time-capsule-layout">
+                <!-- Note Creation Form -->
+                <div class="glass-card note-form-card">
+                    <h3>Write a New Note ✍️</h3>
+                    <form id="note-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="note-author">From / To Name</label>
+                            <input type="text" id="note-author" placeholder="e.g. Always Yours..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="note-text">Your Message or Wish</label>
+                            <textarea id="note-text" rows="4" placeholder="Write your heartfelt note here..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Choose Card Glow Style</label>
+                            <div class="color-picker">
+                                <label class="color-option selected">
+                                    <input type="radio" name="note-color" value="rose" checked>
+                                    <span class="color-dot color-rose"></span> Rose Gold
+                                </label>
+                                <label class="color-option">
+                                    <input type="radio" name="note-color" value="wine">
+                                    <span class="color-dot color-wine"></span> Deep Wine
+                                </label>
+                                <label class="color-option">
+                                    <input type="radio" name="note-color" value="blush">
+                                    <span class="color-dot color-blush"></span> Soft Blush
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary width-full">
+                            <span>Post Note to Time Capsule</span> 💌
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sticky Notes Display Grid -->
+                <div class="notes-grid" id="notes-grid">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="glass-footer">
+            <div class="footer-content">
+                <div class="footer-heart">💖</div>
+                <h3 class="footer-title">Tanvir And Anonna's Diary</h3>
+                <p class="footer-quote">"In every universe and across all of time, it will always be you."</p>
+                <div class="footer-copy">
+                    &copy; 2026 • Permanent Sanctuary of Love • Hardcoded Passcode Protected
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL: IMAGE LIGHTBOX -->
+    <div id="lightbox-modal" class="modal-backdrop hidden">
+        <div class="lightbox-content glass-card">
+            <button id="close-lightbox-btn" class="modal-close-btn">&times;</button>
+            <div class="lightbox-image-container">
+                <img id="lightbox-img" src="" alt="Memory Image">
+            </div>
+            <div class="lightbox-details">
+                <h3 id="lightbox-title">Memory Title</h3>
+                <p id="lightbox-date" class="lightbox-date">Date</p>
+                <p id="lightbox-caption" class="lightbox-caption">Caption</p>
+                <div class="lightbox-actions">
+                    <a id="lightbox-download-btn" href="#" download class="btn btn-secondary btn-sm">Download Photo ⬇️</a>
+                    <button id="lightbox-delete-btn" class="btn btn-danger btn-sm">Delete Memory 🗑️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: UPLOAD NEW MEMORY -->
+    <div id="upload-modal" class="modal-backdrop hidden">
+        <div class="modal-card glass-card">
+            <button id="close-upload-btn" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title">Upload New Memory 📸</h2>
+            <p class="modal-subtitle">Add a photo to our permanent wall of memories.</p>
+
+            <form id="upload-form" onsubmit="return false;">
+                <div class="upload-dropzone" id="upload-dropzone">
+                    <input type="file" id="image-file-input" accept="image/*" class="file-input-hidden" required>
+                    <div id="dropzone-preview" class="dropzone-content">
+                        <span class="upload-icon">☁️</span>
+                        <p>Click or drag & drop a photo here</p>
+                        <span class="upload-hint">Supports JPG, PNG, WEBP</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="memory-title">Memory Title</label>
+                    <input type="text" id="memory-title" placeholder="e.g. Sunset Walk by the Lake" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memory-date">Date of Memory</label>
+                    <input type="date" id="memory-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="memory-caption">Romantic Caption</label>
+                    <textarea id="memory-caption" rows="2" placeholder="Write a short memory description..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancel-upload-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Memory ✨</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD INSTAGRAM REEL -->
+    <div id="reel-modal" class="modal-backdrop hidden">
+        <div class="modal-card glass-card">
+            <button id="close-reel-btn" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title">Add Instagram Reel 🎬</h2>
+            <p class="modal-subtitle">Share a special reel or video link with Anonna.</p>
+
+            <form id="reel-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="reel-url">Instagram Reel Link (URL)</label>
+                    <input type="url" id="reel-url" placeholder="https://www.instagram.com/reel/..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reel-title">Title / Moment</label>
+                    <input type="text" id="reel-title" placeholder="e.g. Our Favorite Song Reel" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reel-caption">Description / Note</label>
+                    <textarea id="reel-caption" rows="2" placeholder="Why is this reel special?" required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancel-reel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Reel 🌟</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PLAY REEL / EMBED PLAYER -->
+    <div id="reel-player-modal" class="modal-backdrop hidden">
+        <div class="modal-card glass-card reel-player-card">
+            <button id="close-reel-player-btn" class="modal-close-btn">&times;</button>
+            <h3 id="reel-player-title" class="modal-title">Reel Showcase</h3>
+            <p id="reel-player-caption" class="modal-subtitle"></p>
+            <div id="reel-player-container" class="reel-embed-wrapper">
+                <!-- Embed or video player loaded dynamically -->
+            </div>
+            <div class="modal-actions">
+                <a id="reel-external-link" href="#" target="_blank" rel="noopener" class="btn btn-primary">Open directly on Instagram ↗️</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: WRITE NEW LOVE LETTER -->
+    <div id="letter-modal" class="modal-backdrop hidden">
+        <div class="modal-card glass-card">
+            <button id="close-letter-btn" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title">Write New Love Letter 💌</h2>
+            <p class="modal-subtitle">Compose a romantic letter or heartfelt quote to save in your diary.</p>
+
+            <form id="letter-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="letter-title">Letter Title</label>
+                    <input type="text" id="letter-title" placeholder="e.g. Raindrops & Gentle Whispers" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="letter-category">Category</label>
+                    <select id="letter-category" class="glass-select" style="width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; color: white;" required>
+                        <option value="letters">Deep Letters</option>
+                        <option value="bonds">Unspoken Bonds</option>
+                        <option value="promises">Special Promises</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="letter-quote">Featured Quote / Preview Line</label>
+                    <input type="text" id="letter-quote" placeholder="e.g. In your eyes, I found my quiet home." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="letter-body">Full Letter Content</label>
+                    <textarea id="letter-body" rows="4" placeholder="Write your full letter here..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="letter-sign">Sign-Off Name</label>
+                    <input type="text" id="letter-sign" placeholder="e.g. Forever Yours, Tanvir" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancel-letter-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Letter ✨</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- UNIVERSAL ROMANTIC DETAIL POPUP -->
+    <div id="detail-popup" class="detail-popup-backdrop hidden">
+        <div class="detail-popup-card glass-card">
+            <button id="close-detail-popup" class="modal-close-btn">&times;</button>
+            <div id="detail-popup-content">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/particles.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/lockscreen.js"></script>
+    <script src="js/gallery.js"></script>
+    <script src="js/reels.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
