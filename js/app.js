@@ -1,12 +1,11 @@
 /* ==========================================================================
-   TANVIR & ANONNA'S DIARY - MAIN APPLICATION CONTROLLER
-   Love letters: list view + romantic popup, filtering & navigation
+   TANVIR & ANONNA'S DIARY - MAIN APPLICATION CONTROLLER (CLOUD EDITION)
+   Love letters: Real-time Firebase sync, list view, filtering & navigation
    ========================================================================== */
 
 (function () {
-    const STORAGE_KEY = 'anonna_love_letters';
-
     let loveLetters = [];
+    let currentFilter = 'all';
 
     // DOM Elements
     const lettersGrid = document.getElementById('letters-grid');
@@ -27,36 +26,47 @@
     const detailPopupContent = document.getElementById('detail-popup-content');
     const closeDetailPopup = document.getElementById('close-detail-popup');
 
-    let currentFilter = 'all';
-
-    function initApp() {
-        loadLetters();
-        renderLetters(currentFilter);
-        setupFilterTabs();
-        setupSoundToggle();
-        setupScrollSpy();
-        setupDaysCounter();
-        setupLetterModal();
-        setupDetailPopup();
-    }
-
-    function loadLetters() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                loveLetters = parsed.filter(l => !['let-1', 'let-2', 'let-3', 'let-4'].includes(l.id));
-            } catch (e) {
-                loveLetters = [];
-            }
+    // Wait for the Firebase module to finish loading from index.html
+    function waitForFirebase(callback) {
+        if (window.db && window.fb) {
+            callback();
         } else {
-            loveLetters = [];
-            saveLetters();
+            setTimeout(() => waitForFirebase(callback), 100);
         }
     }
 
-    function saveLetters() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(loveLetters));
+    function initApp() {
+        waitForFirebase(() => {
+            setupFirebaseListener();
+            setupFilterTabs();
+            setupSoundToggle();
+            setupScrollSpy();
+            setupDaysCounter();
+            setupLetterModal();
+            setupDetailPopup();
+        });
+    }
+
+    function setupFirebaseListener() {
+        const lettersRef = window.fb.ref(window.db, 'letters');
+        
+        // Listens to the cloud and updates the letters list instantly
+        window.fb.onValue(lettersRef, (snapshot) => {
+            const data = snapshot.val();
+            loveLetters = [];
+            
+            if (data) {
+                for (let key in data) {
+                    loveLetters.push({
+                        id: key, 
+                        ...data[key]
+                    });
+                }
+                // Sort by date added (newest first)
+                loveLetters.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+            renderLetters(currentFilter);
+        });
     }
 
     function renderLetters(filterCategory) {
@@ -100,12 +110,12 @@
                 openLetterPopup(letter);
             });
 
+            // Instant cloud delete for letters
             row.querySelector('.del-letter-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                loveLetters = loveLetters.filter(l => l.id !== letter.id);
-                saveLetters();
-                renderLetters(currentFilter);
-                SoundFX.playClickSound();
+                const letterRef = window.fb.ref(window.db, 'letters/' + letter.id);
+                window.fb.remove(letterRef);
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
 
             list.appendChild(row);
@@ -115,7 +125,7 @@
     }
 
     function openLetterPopup(letter) {
-        SoundFX.playClickSound();
+        if (window.SoundFX) window.SoundFX.playClickSound();
         detailPopupContent.innerHTML = `
             <div class="popup-heart-decor">💕</div>
             <span class="popup-category">${escapeHtml(letter.categoryLabel || letter.category)}</span>
@@ -143,7 +153,7 @@
     function setupLetterModal() {
         if (openLetterModalBtn) {
             openLetterModalBtn.addEventListener('click', () => {
-                SoundFX.playClickSound();
+                if (window.SoundFX) window.SoundFX.playClickSound();
                 if (letterModal) letterModal.classList.remove('hidden');
             });
         }
@@ -165,21 +175,22 @@
                 if (!title || !quote || !body || !sign) return;
 
                 const newLetter = {
-                    id: 'let-' + Date.now(),
                     category: category,
                     categoryLabel: categoryLabel,
                     title: title,
                     quote: quote,
                     body: body,
-                    sign: sign
+                    sign: sign,
+                    timestamp: new Date().toISOString()
                 };
 
-                loveLetters.unshift(newLetter);
-                saveLetters();
-                renderLetters(currentFilter);
+                // Push letter directly to Firebase
+                const lettersRef = window.fb.ref(window.db, 'letters');
+                window.fb.push(lettersRef, newLetter);
+
                 letterForm.reset();
                 if (letterModal) letterModal.classList.add('hidden');
-                SoundFX.playUnlockChime();
+                if (window.SoundFX) window.SoundFX.playUnlockChime();
             });
         }
     }
@@ -191,7 +202,7 @@
                 btn.classList.add('active');
                 const filter = btn.getAttribute('data-filter');
                 renderLetters(filter);
-                SoundFX.playClickSound();
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
         });
     }
