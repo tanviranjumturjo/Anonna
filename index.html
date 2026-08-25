@@ -68,7 +68,6 @@
                     <a href="#hero" class="nav-link active">Home</a>
                     <a href="#letters" class="nav-link">Love Letters</a>
                     <a href="#gallery" class="nav-link">Memories</a>
-                    <a href="#reels" class="nav-link">Reels</a>
                     <a href="#messages" class="nav-link">Time Capsule</a>
                 </nav>
 
@@ -169,26 +168,6 @@
 
             <!-- Gallery Masonry Grid -->
             <div class="gallery-masonry" id="gallery-grid">
-                <!-- Injected via JavaScript -->
-            </div>
-        </section>
-
-        <!-- INSTAGRAM REELS SHOWCASE SECTION -->
-        <section id="reels" class="section-container">
-            <div class="section-header">
-                <span class="section-tag">REELS & SONGS</span>
-                <h2 class="section-title">Instagram Reels Showcase</h2>
-                <p class="section-subtitle">Our favorite short clips, funny moments, and romantic reels saved together.</p>
-
-                <div class="reels-action-bar">
-                    <button id="open-reel-modal-btn" class="btn btn-secondary">
-                        <span>Add New Reel Link</span> 🎬
-                    </button>
-                </div>
-            </div>
-
-            <!-- Reels Showcase Grid -->
-            <div class="reels-grid" id="reels-grid">
                 <!-- Injected via JavaScript -->
             </div>
         </section>
@@ -316,52 +295,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD INSTAGRAM REEL -->
-    <div id="reel-modal" class="modal-backdrop hidden">
-        <div class="modal-card glass-card">
-            <button id="close-reel-btn" class="modal-close-btn">&times;</button>
-            <h2 class="modal-title">Add Instagram Reel 🎬</h2>
-            <p class="modal-subtitle">Share a special reel or video link with Anonna.</p>
-
-            <form id="reel-form" onsubmit="return false;">
-                <div class="form-group">
-                    <label for="reel-url">Instagram Reel Link (URL)</label>
-                    <input type="url" id="reel-url" placeholder="https://www.instagram.com/reel/..." required>
-                </div>
-
-                <div class="form-group">
-                    <label for="reel-title">Title / Moment</label>
-                    <input type="text" id="reel-title" placeholder="" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="reel-caption">Description / Note</label>
-                    <textarea id="reel-caption" rows="2" placeholder="Why is this reel special?" required></textarea>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" id="cancel-reel-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Reel 🌟</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: PLAY REEL / EMBED PLAYER -->
-    <div id="reel-player-modal" class="modal-backdrop hidden">
-        <div class="modal-card glass-card reel-player-card">
-            <button id="close-reel-player-btn" class="modal-close-btn">&times;</button>
-            <h3 id="reel-player-title" class="modal-title">Reel Showcase</h3>
-            <p id="reel-player-caption" class="modal-subtitle"></p>
-            <div id="reel-player-container" class="reel-embed-wrapper">
-                <!-- Embed or video player loaded dynamically -->
-            </div>
-            <div class="modal-actions">
-                <a id="reel-external-link" href="#" target="_blank" rel="noopener" class="btn btn-primary">Open directly on Instagram ↗️</a>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL: WRITE NEW LOVE LETTER -->
     <div id="letter-modal" class="modal-backdrop hidden">
         <div class="modal-card glass-card">
@@ -444,7 +377,6 @@
     <script src="./js/audio.js"></script>
     <script src="./js/lockscreen.js"></script>
     <script src="./js/gallery.js"></script>
-    <script src="./js/reels.js"></script>
     <script src="./js/messages.js"></script>
     <script src="./js/app.js"></script>
 </body>
