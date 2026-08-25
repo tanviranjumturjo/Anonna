@@ -1,14 +1,9 @@
 /* ==========================================================================
-   FOR ANONNA BRISTY - SHARED PHOTO GALLERY & LIGHTBOX
-   Masonry grid, memory image uploader, Base64 local storage persistence
+   FOR ANONNA BRISTY - SHARED PHOTO GALLERY (CLOUD EDITION)
+   Masonry grid, memory image uploader, Real-time Firebase sync
    ========================================================================== */
 
 const GalleryModule = (function () {
-    const STORAGE_KEY = 'anonna_gallery_memories';
-
-    // Initial memories (empty by default, user inputs manually)
-    const defaultMemories = [];
-
     let memories = [];
     let activeMemory = null;
 
@@ -32,30 +27,42 @@ const GalleryModule = (function () {
     const lightboxDownloadBtn = document.getElementById('lightbox-download-btn');
     const lightboxDeleteBtn = document.getElementById('lightbox-delete-btn');
 
-    function init() {
-        loadMemories();
-        renderGallery();
-        setupEventListeners();
-    }
-
-    function loadMemories() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                // Filter out any leftover pre-given memory IDs
-                memories = parsed.filter(m => !['mem-1', 'mem-2', 'mem-3'].includes(m.id));
-            } catch (e) {
-                memories = [];
-            }
+    // Wait for the Firebase module to finish loading from index.html
+    function waitForFirebase(callback) {
+        if (window.db && window.fb) {
+            callback();
         } else {
-            memories = [];
-            saveMemories();
+            setTimeout(() => waitForFirebase(callback), 100);
         }
     }
 
-    function saveMemories() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(memories));
+    function init() {
+        waitForFirebase(() => {
+            setupFirebaseListener();
+            setupEventListeners();
+        });
+    }
+
+    function setupFirebaseListener() {
+        const memoriesRef = window.fb.ref(window.db, 'memories');
+        
+        // Listens to the cloud and updates the gallery instantly
+        window.fb.onValue(memoriesRef, (snapshot) => {
+            const data = snapshot.val();
+            memories = [];
+            
+            if (data) {
+                for (let key in data) {
+                    memories.push({
+                        id: key, 
+                        ...data[key]
+                    });
+                }
+                // Sort by date added (newest first)
+                memories.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+            renderGallery();
+        });
     }
 
     function renderGallery() {
@@ -89,12 +96,12 @@ const GalleryModule = (function () {
 
             item.addEventListener('click', () => openLightbox(mem));
 
+            // Instant cloud delete from grid
             item.querySelector('.delete-memory-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                memories = memories.filter(m => m.id !== mem.id);
-                saveMemories();
-                renderGallery();
-                SoundFX.playClickSound();
+                const memRef = window.fb.ref(window.db, 'memories/' + mem.id);
+                window.fb.remove(memRef);
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
 
             galleryGrid.appendChild(item);
@@ -103,7 +110,7 @@ const GalleryModule = (function () {
 
     function openLightbox(mem) {
         activeMemory = mem;
-        SoundFX.playClickSound();
+        if (window.SoundFX) window.SoundFX.playClickSound();
         lightboxImg.src = mem.src;
         lightboxTitle.textContent = mem.title;
         lightboxDate.textContent = '📅 ' + formatDate(mem.date);
@@ -120,10 +127,9 @@ const GalleryModule = (function () {
     }
 
     function setupEventListeners() {
-        // Upload modal buttons
         if (openUploadModalBtn) {
             openUploadModalBtn.addEventListener('click', () => {
-                SoundFX.playClickSound();
+                if (window.SoundFX) window.SoundFX.playClickSound();
                 uploadModal.classList.remove('hidden');
             });
         }
@@ -131,7 +137,6 @@ const GalleryModule = (function () {
         if (closeUploadBtn) closeUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
         if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', () => uploadModal.classList.add('hidden'));
 
-        // File input preview change
         if (imageFileInput) {
             imageFileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
@@ -145,7 +150,6 @@ const GalleryModule = (function () {
             });
         }
 
-        // Upload form submit
         if (uploadForm) {
             uploadForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -160,16 +164,17 @@ const GalleryModule = (function () {
                 reader.onload = function (event) {
                     const base64Src = event.target.result;
                     const newMem = {
-                        id: 'mem-' + Date.now(),
                         title: title,
                         date: date,
                         caption: caption,
-                        src: base64Src
+                        src: base64Src,
+                        timestamp: new Date().toISOString()
                     };
 
-                    memories.unshift(newMem);
-                    saveMemories();
-                    renderGallery();
+                    // Send directly to Firebase
+                    const memoriesRef = window.fb.ref(window.db, 'memories');
+                    window.fb.push(memoriesRef, newMem);
+
                     uploadForm.reset();
                     if (dropzonePreview) {
                         dropzonePreview.innerHTML = `
@@ -179,22 +184,22 @@ const GalleryModule = (function () {
                         `;
                     }
                     uploadModal.classList.add('hidden');
-                    SoundFX.playUnlockChime();
+                    if (window.SoundFX) window.SoundFX.playUnlockChime();
                 };
                 reader.readAsDataURL(file);
             });
         }
 
-        // Lightbox close & delete
         if (closeLightboxBtn) closeLightboxBtn.addEventListener('click', closeLightbox);
+        
+        // Instant cloud delete from lightbox
         if (lightboxDeleteBtn) {
             lightboxDeleteBtn.addEventListener('click', () => {
                 if (!activeMemory) return;
-                memories = memories.filter(m => m.id !== activeMemory.id);
-                saveMemories();
-                renderGallery();
+                const memRef = window.fb.ref(window.db, 'memories/' + activeMemory.id);
+                window.fb.remove(memRef);
                 closeLightbox();
-                SoundFX.playClickSound();
+                if (window.SoundFX) window.SoundFX.playClickSound();
             });
         }
     }
