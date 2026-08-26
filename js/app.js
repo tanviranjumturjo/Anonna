@@ -103,7 +103,7 @@
                 <div class="item-row-info">
                     <div class="item-row-title">${escapeHtml(letter.title)}</div>
                     <div class="item-row-sub">"${escapeHtml(letter.quote)}"</div>
-                    <div class="item-row-date">📅 ${displayDate}</div>
+                    <div class="item-row-date">${displayDate}</div>
                 </div>
                 <div class="item-row-reactions">
                     <button class="reaction-btn love-btn" title="Love">
@@ -164,7 +164,7 @@
             <div class="popup-heart-decor">💕</div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
                 <span class="popup-category">${escapeHtml(letter.categoryLabel || letter.category)}</span>
-                <span class="popup-date-badge">📅 ${displayDate}</span>
+                <span class="popup-date-badge">${displayDate}</span>
             </div>
             <h2 class="popup-title">${escapeHtml(letter.title)}</h2>
             <p class="popup-quote">"${escapeHtml(letter.quote)}"</p>

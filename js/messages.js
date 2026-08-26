@@ -76,7 +76,7 @@ const MessagesModule = (function () {
                 <div class="note-footer">
                     <div class="note-meta">
                         <span class="note-author">— ${escapeHtml(note.author)}</span>
-                        <span class="note-time">📅 ${displayDate}</span>
+                        <span class="note-time">${displayDate}</span>
                     </div>
                     <div class="note-actions">
                         <button class="reaction-btn love-btn note-love-btn" title="Love">
@@ -158,19 +158,9 @@ const MessagesModule = (function () {
     }
 
     function formatNoteDate(isoString) {
-        if (!isoString) return 'Just now';
+        if (!isoString) return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const date = new Date(isoString);
         if (isNaN(date.getTime())) return isoString;
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 2) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 

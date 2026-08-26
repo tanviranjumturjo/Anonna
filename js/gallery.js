@@ -93,7 +93,7 @@ const GalleryModule = (function () {
                         <h3 class="gallery-title">${escapeHtml(mem.title)}</h3>
                         <button class="delete-memory-btn" style="background: rgba(225,29,72,0.3); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;" title="Delete Photo">🗑️</button>
                     </div>
-                    <span class="gallery-date">📅 ${displayDate}</span>
+                    <span class="gallery-date">${displayDate}</span>
                     <p class="gallery-caption">${escapeHtml(mem.caption)}</p>
                     <div class="gallery-reaction-bar" style="margin-top: 10px; display: flex; gap: 8px; align-items: center;">
                         <button class="reaction-btn love-btn mem-love-btn" title="Love">
@@ -148,7 +148,7 @@ const GalleryModule = (function () {
 
         lightboxImg.src = mem.src;
         lightboxTitle.textContent = mem.title;
-        lightboxDate.textContent = '📅 ' + displayDate;
+        lightboxDate.textContent = displayDate;
         lightboxCaption.textContent = mem.caption;
         lightboxDownloadBtn.href = mem.src;
         lightboxDownloadBtn.download = `${mem.title.replace(/\s+/g, '_')}.jpg`;
