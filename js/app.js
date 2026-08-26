@@ -360,3 +360,24 @@
 
     document.addEventListener('DOMContentLoaded', initApp);
 })();
+
+// ==========================================
+// VISITOR TRACKING (Firebase Realtime Database)
+// ==========================================
+function logSiteVisit() {
+    // Check if Firebase is loaded properly from index.html
+    if (window.db && window.fb) {
+        const visitsRef = window.fb.ref(window.db, 'site_visits');
+        
+        window.fb.push(visitsRef, {
+            timestamp: new Date().toLocaleString(),
+            device: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+            platform: navigator.userAgentData?.platform || navigator.platform,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height
+        });
+    }
+}
+
+// Fire the tracker when the app loads
+window.addEventListener('load', logSiteVisit);
