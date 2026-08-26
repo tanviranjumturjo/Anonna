@@ -1,6 +1,6 @@
 /* ==========================================================================
    FOR ANONNA BRISTY - SHARED PHOTO GALLERY (CLOUD EDITION)
-   Masonry grid, memory image uploader, Real-time Firebase sync
+   Masonry grid, auto-date, Love/Broken reactions & real-time Firebase sync
    ========================================================================== */
 
 const GalleryModule = (function () {
@@ -55,11 +55,13 @@ const GalleryModule = (function () {
                 for (let key in data) {
                     memories.push({
                         id: key, 
+                        likes: 0,
+                        broken: 0,
                         ...data[key]
                     });
                 }
                 // Sort by date added (newest first)
-                memories.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                memories.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
             }
             renderGallery();
         });
@@ -82,19 +84,50 @@ const GalleryModule = (function () {
         memories.forEach(mem => {
             const item = document.createElement('div');
             item.className = 'gallery-item glass-card';
+            const displayDate = formatDate(mem.timestamp || mem.date);
+
             item.innerHTML = `
                 <img src="${mem.src}" alt="${escapeHtml(mem.title)}" loading="lazy">
                 <div class="gallery-overlay">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
                         <h3 class="gallery-title">${escapeHtml(mem.title)}</h3>
                         <button class="delete-memory-btn" style="background: rgba(225,29,72,0.3); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;" title="Delete Photo">🗑️</button>
                     </div>
-                    <span class="gallery-date">📅 ${formatDate(mem.date)}</span>
+                    <span class="gallery-date">📅 ${displayDate}</span>
                     <p class="gallery-caption">${escapeHtml(mem.caption)}</p>
+                    <div class="gallery-reaction-bar" style="margin-top: 10px; display: flex; gap: 8px; align-items: center;">
+                        <button class="reaction-btn love-btn mem-love-btn" title="Love">
+                            ❤️ <span class="reaction-count">${mem.likes || 0}</span>
+                        </button>
+                        <button class="reaction-btn break-btn mem-break-btn" title="Heartbreak">
+                            💔 <span class="reaction-count">${mem.broken || 0}</span>
+                        </button>
+                    </div>
                 </div>
             `;
 
-            item.addEventListener('click', () => openLightbox(mem));
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.reaction-btn') || e.target.closest('.delete-memory-btn')) return;
+                openLightbox(mem);
+            });
+
+            // Love reaction
+            item.querySelector('.mem-love-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newLikes = (mem.likes || 0) + 1;
+                const ref = window.fb.ref(window.db, 'memories/' + mem.id + '/likes');
+                window.fb.set(ref, newLikes);
+                if (window.SoundFX) window.SoundFX.playHeartSound();
+            });
+
+            // Broken love reaction
+            item.querySelector('.mem-break-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newBroken = (mem.broken || 0) + 1;
+                const ref = window.fb.ref(window.db, 'memories/' + mem.id + '/broken');
+                window.fb.set(ref, newBroken);
+                if (window.SoundFX) window.SoundFX.playBreakSound();
+            });
 
             // Instant cloud delete from grid
             item.querySelector('.delete-memory-btn').addEventListener('click', (e) => {
@@ -111,12 +144,59 @@ const GalleryModule = (function () {
     function openLightbox(mem) {
         activeMemory = mem;
         if (window.SoundFX) window.SoundFX.playClickSound();
+        const displayDate = formatDate(mem.timestamp || mem.date);
+
         lightboxImg.src = mem.src;
         lightboxTitle.textContent = mem.title;
-        lightboxDate.textContent = '📅 ' + formatDate(mem.date);
+        lightboxDate.textContent = '📅 ' + displayDate;
         lightboxCaption.textContent = mem.caption;
         lightboxDownloadBtn.href = mem.src;
         lightboxDownloadBtn.download = `${mem.title.replace(/\s+/g, '_')}.jpg`;
+
+        // Update reactions inside lightbox
+        let lightboxReactions = document.getElementById('lightbox-reactions');
+        if (!lightboxReactions) {
+            lightboxReactions = document.createElement('div');
+            lightboxReactions.id = 'lightbox-reactions';
+            lightboxReactions.className = 'lightbox-reactions-bar';
+            const details = document.querySelector('.lightbox-details');
+            if (details) details.insertBefore(lightboxReactions, document.querySelector('.lightbox-actions'));
+        }
+
+        lightboxReactions.innerHTML = `
+            <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+                <button class="reaction-btn love-btn lb-love-btn">
+                    ❤️ Love <span class="reaction-count">${mem.likes || 0}</span>
+                </button>
+                <button class="reaction-btn break-btn lb-break-btn">
+                    💔 Heartbreak <span class="reaction-count">${mem.broken || 0}</span>
+                </button>
+            </div>
+        `;
+
+        const lbLove = lightboxReactions.querySelector('.lb-love-btn');
+        if (lbLove) {
+            lbLove.addEventListener('click', () => {
+                const newLikes = (mem.likes || 0) + 1;
+                const ref = window.fb.ref(window.db, 'memories/' + mem.id + '/likes');
+                window.fb.set(ref, newLikes);
+                mem.likes = newLikes;
+                lbLove.querySelector('.reaction-count').textContent = newLikes;
+                if (window.SoundFX) window.SoundFX.playHeartSound();
+            });
+        }
+
+        const lbBreak = lightboxReactions.querySelector('.lb-break-btn');
+        if (lbBreak) {
+            lbBreak.addEventListener('click', () => {
+                const newBroken = (mem.broken || 0) + 1;
+                const ref = window.fb.ref(window.db, 'memories/' + mem.id + '/broken');
+                window.fb.set(ref, newBroken);
+                mem.broken = newBroken;
+                lbBreak.querySelector('.reaction-count').textContent = newBroken;
+                if (window.SoundFX) window.SoundFX.playBreakSound();
+            });
+        }
 
         lightboxModal.classList.remove('hidden');
     }
@@ -155,19 +235,19 @@ const GalleryModule = (function () {
                 e.preventDefault();
                 const file = imageFileInput.files[0];
                 const title = document.getElementById('memory-title').value.trim();
-                const date = document.getElementById('memory-date').value;
                 const caption = document.getElementById('memory-caption').value.trim();
 
-                if (!file || !title || !date || !caption) return;
+                if (!file || !title || !caption) return;
 
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const base64Src = event.target.result;
                     const newMem = {
                         title: title,
-                        date: date,
                         caption: caption,
                         src: base64Src,
+                        likes: 0,
+                        broken: 0,
                         timestamp: new Date().toISOString()
                     };
 
@@ -205,8 +285,9 @@ const GalleryModule = (function () {
     }
 
     function formatDate(dateStr) {
-        if (!dateStr) return '';
+        if (!dateStr) return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 

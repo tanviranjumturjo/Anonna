@@ -1,5 +1,6 @@
 /* ==========================================================================
    FOR ANONNA BRISTY - RESPONSIVE STYLESHEET
+   Comprehensive Mobile & Tablet Optimization
    ========================================================================== */
 
 /* Laptop & Tablet (Up to 1024px) */
@@ -28,91 +29,197 @@
 
 /* Tablet & Mobile (Up to 768px) */
 @media (max-width: 768px) {
+    .glass-nav {
+        padding: 0;
+    }
+
     .nav-container {
-        padding: 12px 18px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
     }
 
     .nav-links {
+        display: flex;
+        align-items: center;
         gap: 4px;
-        flex-wrap: wrap;
-        justify-content: center;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex: 1;
+        padding-right: 4px;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
     }
 
     .nav-link {
-        font-size: 0.8rem;
-        padding: 6px 12px;
+        font-size: 0.78rem;
+        padding: 6px 10px;
+        flex-shrink: 0;
     }
 
     .nav-actions {
-        right: 12px;
+        position: static;
+        transform: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
 
     .hero-section {
-        padding: 110px 18px 60px;
+        padding: 95px 16px 50px;
+        min-height: auto;
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
 
     .hero-subtext {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
     }
 
     .hero-subtitle {
-        font-size: 1.15rem;
+        font-size: 1.05rem;
     }
 
     .hero-stats {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 10px;
     }
 
     .section-container {
-        padding: 60px 18px;
+        padding: 50px 16px;
     }
 
     .section-title {
-        font-size: 2.2rem;
+        font-size: 2rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.95rem;
     }
 
     .gallery-masonry {
         column-count: 1;
     }
 
-    .letters-grid {
-        grid-template-columns: 1fr;
+    /* Item row list mobile layout */
+    .item-row {
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        gap: 10px;
     }
 
-    .reels-grid {
-        grid-template-columns: 1fr;
+    .item-row-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
     }
 
-    .notes-grid {
-        grid-template-columns: 1fr;
+    .item-row-info {
+        flex: 1 1 calc(100% - 60px);
+    }
+
+    .item-row-reactions {
+        width: 100%;
+        justify-content: flex-start;
+        padding-top: 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .item-row-arrow {
+        display: none;
+    }
+
+    .item-row-actions {
+        margin-left: auto;
+    }
+
+    .item-row-actions button {
+        opacity: 0.9;
+        font-size: 1rem;
+        padding: 6px;
+    }
+
+    /* Note card footer mobile */
+    .note-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .note-actions {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .modal-card {
-        padding: 24px;
+        padding: 20px 16px;
+        max-width: 92vw;
+    }
+
+    .detail-popup-card {
+        padding: 24px 18px;
+        max-width: 92vw;
+        max-height: 88vh;
+    }
+
+    .popup-title {
+        font-size: 1.6rem;
+    }
+
+    .popup-quote {
+        font-size: 1.1rem;
     }
 }
 
 /* Mobile Small (Up to 480px) */
 @media (max-width: 480px) {
     .lock-card {
-        padding: 30px 20px;
+        padding: 28px 16px;
+        max-width: 92vw;
     }
 
     .lock-title {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
+    }
+
+    .lock-subtitle {
+        font-size: 0.88rem;
     }
 
     .hero-cta-group {
         flex-direction: column;
         width: 100%;
+        gap: 10px;
     }
 
     .btn {
         width: 100%;
+        justify-content: center;
+    }
+
+    .nav-link {
+        font-size: 0.74rem;
+        padding: 5px 8px;
+    }
+
+    .icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
     }
 }

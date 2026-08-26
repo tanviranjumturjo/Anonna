@@ -1,6 +1,6 @@
 /* ==========================================================================
    TANVIR & ANONNA'S DIARY - MAIN APPLICATION CONTROLLER (CLOUD EDITION)
-   Love letters: Real-time Firebase sync, list view, filtering & navigation
+   Love letters: Real-time Firebase sync, auto-date, reactions & popups
    ========================================================================== */
 
 (function () {
@@ -59,11 +59,13 @@
                 for (let key in data) {
                     loveLetters.push({
                         id: key, 
+                        likes: 0,
+                        broken: 0,
                         ...data[key]
                     });
                 }
                 // Sort by date added (newest first)
-                loveLetters.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                loveLetters.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
             }
             renderLetters(currentFilter);
         });
@@ -94,23 +96,53 @@
         filtered.forEach(letter => {
             const row = document.createElement('div');
             row.className = 'item-row';
+            const displayDate = formatDateStr(letter.timestamp);
+
             row.innerHTML = `
                 <div class="item-row-icon">💌</div>
                 <div class="item-row-info">
                     <div class="item-row-title">${escapeHtml(letter.title)}</div>
                     <div class="item-row-sub">"${escapeHtml(letter.quote)}"</div>
+                    <div class="item-row-date">📅 ${displayDate}</div>
                 </div>
-                <div class="item-row-meta">${escapeHtml(letter.categoryLabel || letter.category)}</div>
-                <div class="item-row-actions"><button class="del-letter-btn" title="Delete">🗑️</button></div>
+                <div class="item-row-reactions">
+                    <button class="reaction-btn love-btn" title="Love">
+                        ❤️ <span class="reaction-count">${letter.likes || 0}</span>
+                    </button>
+                    <button class="reaction-btn break-btn" title="Heartbreak">
+                        💔 <span class="reaction-count">${letter.broken || 0}</span>
+                    </button>
+                </div>
+                <div class="item-row-actions">
+                    <button class="del-letter-btn" title="Delete">🗑️</button>
+                </div>
                 <span class="item-row-arrow">→</span>
             `;
 
             row.addEventListener('click', (e) => {
-                if (e.target.closest('.del-letter-btn')) return;
+                if (e.target.closest('.reaction-btn') || e.target.closest('.del-letter-btn')) return;
                 openLetterPopup(letter);
             });
 
-            // Instant cloud delete for letters
+            // Love reaction
+            row.querySelector('.love-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newLikes = (letter.likes || 0) + 1;
+                const ref = window.fb.ref(window.db, 'letters/' + letter.id + '/likes');
+                window.fb.set(ref, newLikes);
+                if (window.SoundFX) window.SoundFX.playHeartSound();
+            });
+
+            // Broken love reaction
+            row.querySelector('.break-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newBroken = (letter.broken || 0) + 1;
+                const ref = window.fb.ref(window.db, 'letters/' + letter.id + '/broken');
+                window.fb.set(ref, newBroken);
+                if (window.SoundFX) window.SoundFX.playBreakSound();
+            });
+
+            // Instant cloud delete
             row.querySelector('.del-letter-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
                 const letterRef = window.fb.ref(window.db, 'letters/' + letter.id);
@@ -126,14 +158,53 @@
 
     function openLetterPopup(letter) {
         if (window.SoundFX) window.SoundFX.playClickSound();
+        const displayDate = formatDateStr(letter.timestamp);
+
         detailPopupContent.innerHTML = `
             <div class="popup-heart-decor">💕</div>
-            <span class="popup-category">${escapeHtml(letter.categoryLabel || letter.category)}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                <span class="popup-category">${escapeHtml(letter.categoryLabel || letter.category)}</span>
+                <span class="popup-date-badge">📅 ${displayDate}</span>
+            </div>
             <h2 class="popup-title">${escapeHtml(letter.title)}</h2>
             <p class="popup-quote">"${escapeHtml(letter.quote)}"</p>
             <div class="popup-body">${escapeHtml(letter.body)}</div>
             <p class="popup-sign">— ${escapeHtml(letter.sign)}</p>
+            
+            <div class="popup-reactions-bar">
+                <button class="reaction-btn love-btn popup-love-btn">
+                    ❤️ Love <span class="reaction-count">${letter.likes || 0}</span>
+                </button>
+                <button class="reaction-btn break-btn popup-break-btn">
+                    💔 Heartbreak <span class="reaction-count">${letter.broken || 0}</span>
+                </button>
+            </div>
         `;
+
+        const popLoveBtn = detailPopupContent.querySelector('.popup-love-btn');
+        if (popLoveBtn) {
+            popLoveBtn.addEventListener('click', () => {
+                const newLikes = (letter.likes || 0) + 1;
+                const ref = window.fb.ref(window.db, 'letters/' + letter.id + '/likes');
+                window.fb.set(ref, newLikes);
+                letter.likes = newLikes;
+                popLoveBtn.querySelector('.reaction-count').textContent = newLikes;
+                if (window.SoundFX) window.SoundFX.playHeartSound();
+            });
+        }
+
+        const popBreakBtn = detailPopupContent.querySelector('.popup-break-btn');
+        if (popBreakBtn) {
+            popBreakBtn.addEventListener('click', () => {
+                const newBroken = (letter.broken || 0) + 1;
+                const ref = window.fb.ref(window.db, 'letters/' + letter.id + '/broken');
+                window.fb.set(ref, newBroken);
+                letter.broken = newBroken;
+                popBreakBtn.querySelector('.reaction-count').textContent = newBroken;
+                if (window.SoundFX) window.SoundFX.playBreakSound();
+            });
+        }
+
         detailPopup.classList.remove('hidden');
     }
 
@@ -181,6 +252,8 @@
                     quote: quote,
                     body: body,
                     sign: sign,
+                    likes: 0,
+                    broken: 0,
                     timestamp: new Date().toISOString()
                 };
 
@@ -264,6 +337,13 @@
             const fresh = calculateDays();
             daysEl.textContent = fresh.toLocaleString() + '+';
         }, 3600000);
+    }
+
+    function formatDateStr(timestamp) {
+        if (!timestamp) return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const d = new Date(timestamp);
+        if (isNaN(d.getTime())) return timestamp;
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     function escapeHtml(str) {
