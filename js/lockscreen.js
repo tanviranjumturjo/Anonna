@@ -4,7 +4,7 @@
    ========================================================================== */
 
 (function () {
-    const HARDCODED_PASSCODE = "18-05-2018";
+    const HARDCODED_PASSCODE = "25-05-2018";
 
     const lockScreen = document.getElementById('lock-screen');
     const mainApp = document.getElementById('main-app');
