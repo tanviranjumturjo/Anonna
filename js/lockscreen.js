@@ -85,8 +85,10 @@
             errorMsg.classList.remove('visible');
             sessionStorage.setItem('anonna_sanctuary_unlocked', 'true');
             
-            // Play harmonic chime
-            SoundFX.playUnlockChime();
+            // Play heavenly unlock chime
+            if (window.SoundFX) {
+                window.SoundFX.playUnlockChime();
+            }
 
             // Animate lock screen fade out
             lockScreen.classList.add('unlocking');
@@ -99,7 +101,9 @@
         } else {
             // Failed
             errorMsg.classList.add('visible');
-            SoundFX.playErrorSound();
+            if (window.SoundFX) {
+                window.SoundFX.playErrorSound();
+            }
             passcodeInput.classList.add('shake');
             setTimeout(() => passcodeInput.classList.remove('shake'), 500);
         }
