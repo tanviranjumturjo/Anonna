@@ -97,12 +97,13 @@
 
     .hero-warning-card {
         padding: 18px 14px;
-        margin-top: 24px;
+        margin: 0 auto;
     }
 
     .hero-stats {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 14px;
+        margin: 0 auto 36px;
     }
 
     .section-container {

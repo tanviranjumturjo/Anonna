@@ -745,7 +745,7 @@ body.locked {
     text-align: left;
     max-width: 780px;
     width: 100%;
-    margin: 36px auto 0;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
 }
@@ -943,10 +943,10 @@ body.locked {
 .hero-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 20px;
     max-width: 960px;
     width: 100%;
-    margin: 0 auto;
+    margin: 0 auto 52px;
 }
 
 .stat-card {
