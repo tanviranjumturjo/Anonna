@@ -141,7 +141,9 @@
 
     function relockApp() {
         sessionStorage.removeItem('anonna_sanctuary_unlocked');
-        SoundFX.playClickSound();
+        if (window.SoundFX) {
+            window.SoundFX.playLockSound();
+        }
         if (passcodeInput) passcodeInput.value = '';
         if (mainApp && lockScreen) {
             mainApp.classList.remove('main-app-visible');
