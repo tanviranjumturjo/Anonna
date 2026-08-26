@@ -84,84 +84,32 @@
 
         <!-- HERO SECTION -->
         <section id="hero" class="hero-section">
-            <div class="hero-main-container">
-                <div class="hero-content">
-                    <div class="hero-badge animate-fade-down">
-                        <span class="hero-poem-text">তোমারেই যেন ভালোবাসিয়াছি শত রূপে শত বার জনমে জনমে, যুগে যুগে অনিবার।</span>
-                    </div>
-                    <h1 class="hero-title animate-fade-up">
-                        <span class="text-gradient">Tanvir And Anonna's Diary</span>
-                        <span class="hero-subtext">Moments, Words & Memories</span>
-                    </h1>
-                    <p class="hero-subtitle animate-fade-up delay-1">
-                        "Even when words are quiet, love speaks softly. In every silence and every song, my heart echoes your name."
-                    </p>
-
-                    <div class="hero-cta-group animate-fade-up delay-2">
-                        <a href="#letters" class="btn btn-primary">
-                            <span>Read Love Letters</span> 💌
-                        </a>
-                        <a href="#gallery" class="btn btn-secondary">
-                            <span>Explore Gallery</span> 🖼️
-                        </a>
-                        <a href="#messages" class="btn btn-outline">
-                            <span>Time Capsule</span> ⏳
-                        </a>
-                    </div>
+            <div class="hero-content">
+                <div class="hero-badge animate-fade-down">
+                    <span class="hero-poem-text">তোমারেই যেন ভালোবাসিয়াছি শত রূপে শত বার জনমে জনমে, যুগে যুগে অনিবার।</span>
                 </div>
+                <h1 class="hero-title animate-fade-up">
+                    <span class="text-gradient">Tanvir And Anonna's Diary</span>
+                    <span class="hero-subtext">Moments, Words & Memories</span>
+                </h1>
+                <p class="hero-subtitle animate-fade-up delay-1">
+                    "Even when words are quiet, love speaks softly. In every silence and every song, my heart echoes your name."
+                </p>
 
-                <!-- RIGHT-SIDE ROMANTIC WARNING BOX -->
-                <div class="hero-warning-card glass-card animate-fade-up delay-2">
-                    <div class="warning-card-header">
-                        <div class="warning-card-title-group">
-                            <span class="warning-siren">🚨</span>
-                            <div>
-                                <h3 class="warning-card-title">Mutual Warning Board</h3>
-                                <p class="warning-card-subtitle">Official alerts & cute rules</p>
-                            </div>
-                        </div>
-                        <button id="toggle-add-warning-btn" class="btn btn-sm btn-outline">➕ Add Warning</button>
-                    </div>
-
-                    <!-- Collapsible Warning Input Form -->
-                    <div id="warning-form-container" class="warning-form-container hidden">
-                        <form id="warning-form" onsubmit="return false;">
-                            <div class="form-group">
-                                <label for="warning-text">Warning / Rule</label>
-                                <input type="text" id="warning-text" placeholder="e.g. Do not skip meals today!" required>
-                            </div>
-                            <div class="warning-form-row">
-                                <div class="form-group" style="flex: 1.2;">
-                                    <label for="warning-level">Severity Level (1-5)</label>
-                                    <select id="warning-level" class="glass-select">
-                                        <option value="5">🚨 Level 5: CRITICAL</option>
-                                        <option value="4">⚠️ Level 4: HIGH</option>
-                                        <option value="3" selected>⚡ Level 3: MODERATE</option>
-                                        <option value="2">💛 Level 2: MILD</option>
-                                        <option value="1">🌸 Level 1: GENTLE</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" style="flex: 0.8;">
-                                    <label for="warning-author">From</label>
-                                    <select id="warning-author" class="glass-select">
-                                        <option value="Tanvir">Tanvir 🤵</option>
-                                        <option value="Anonna">Anonna 👰</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-sm width-full" style="margin-top: 6px;">
-                                <span>Issue Warning</span> ⚠️
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Warnings Dynamic List -->
-                    <div class="warnings-list" id="warnings-list">
-                        <!-- Loaded from Firebase -->
-                    </div>
+                <div class="hero-cta-group animate-fade-up delay-2">
+                    <a href="#letters" class="btn btn-primary">
+                        <span>Read Love Letters</span> 💌
+                    </a>
+                    <a href="#gallery" class="btn btn-secondary">
+                        <span>Explore Gallery</span> 🖼️
+                    </a>
+                    <a href="#messages" class="btn btn-outline">
+                        <span>Time Capsule</span> ⏳
+                    </a>
                 </div>
             </div>
 
+            <!-- 4 STATS CARDS -->
             <div class="hero-stats animate-fade-up delay-3">
                 <div class="stat-card glass-card">
                     <span class="stat-value" id="days-count">∞</span>
@@ -178,6 +126,54 @@
                 <div class="stat-card glass-card">
                     <span class="stat-value">Forever</span>
                     <span class="stat-label">Unspoken Bond</span>
+                </div>
+            </div>
+
+            <!-- WARNINGS FOR TANVIR BOX (Positioned under Stats) -->
+            <div class="hero-warning-card glass-card animate-fade-up delay-3">
+                <div class="warning-card-header">
+                    <div class="warning-card-title-group">
+                        <span class="warning-siren">🚨</span>
+                        <h3 class="warning-card-title">Warnings for Tanvir</h3>
+                    </div>
+                    <button id="toggle-add-warning-btn" class="btn btn-sm btn-outline">➕ Add Warning</button>
+                </div>
+
+                <!-- Collapsible Warning Input Form -->
+                <div id="warning-form-container" class="warning-form-container hidden">
+                    <form id="warning-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="warning-text">Warning / Rule</label>
+                            <input type="text" id="warning-text" placeholder="e.g. Do not skip meals today!" required>
+                        </div>
+                        <div class="warning-form-row">
+                            <div class="form-group" style="flex: 1.2;">
+                                <label for="warning-level">Severity Level (1-5)</label>
+                                <select id="warning-level" class="glass-select">
+                                    <option value="5">🚨 Level 5: CRITICAL</option>
+                                    <option value="4">⚠️ Level 4: HIGH</option>
+                                    <option value="3" selected>⚡ Level 3: MODERATE</option>
+                                    <option value="2">💛 Level 2: MILD</option>
+                                    <option value="1">🌸 Level 1: GENTLE</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 0.8;">
+                                <label for="warning-author">From</label>
+                                <select id="warning-author" class="glass-select">
+                                    <option value="Anonna" selected>Anonna 👰</option>
+                                    <option value="Tanvir">Tanvir 🤵</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm width-full" style="margin-top: 6px;">
+                            <span>Issue Warning</span> ⚠️
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Warnings Dynamic List -->
+                <div class="warnings-list" id="warnings-list">
+                    <!-- Loaded from Firebase -->
                 </div>
             </div>
         </section>
