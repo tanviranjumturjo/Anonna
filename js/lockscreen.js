@@ -77,11 +77,25 @@
         }, 5000);
     }
 
+    let failedAttempts = 0;
+    let lockUntil = 0;
+
     function attemptUnlock() {
+        const now = Date.now();
+        if (now < lockUntil) {
+            const secondsLeft = Math.ceil((lockUntil - now) / 1000);
+            errorMsg.textContent = `Too many attempts. Please wait ${secondsLeft}s, my love.`;
+            errorMsg.classList.add('visible');
+            if (window.SoundFX) window.SoundFX.playErrorSound();
+            return;
+        }
+
         const entered = passcodeInput.value.trim();
 
         if (entered === HARDCODED_PASSCODE) {
             // Success!
+            failedAttempts = 0;
+            errorMsg.textContent = 'Incorrect passcode. Try again, my love.';
             errorMsg.classList.remove('visible');
             sessionStorage.setItem('anonna_sanctuary_unlocked', 'true');
             
@@ -100,6 +114,13 @@
             }, 700);
         } else {
             // Failed
+            failedAttempts++;
+            if (failedAttempts >= 5) {
+                lockUntil = Date.now() + 15000; // 15s cooldown
+                errorMsg.textContent = 'Too many attempts. Please wait 15s, my love.';
+            } else {
+                errorMsg.textContent = 'Incorrect passcode. Try again, my love.';
+            }
             errorMsg.classList.add('visible');
             if (window.SoundFX) {
                 window.SoundFX.playErrorSound();

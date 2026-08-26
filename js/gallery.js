@@ -239,12 +239,28 @@ const GalleryModule = (function () {
 
                 if (!file || !title || !caption) return;
 
+                // Security validation: verify file is actually an image and under 6MB
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file (JPG, PNG, WEBP).');
+                    return;
+                }
+                if (file.size > 6 * 1024 * 1024) {
+                    alert('Image size must be less than 6MB.');
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const base64Src = event.target.result;
+                    // Security validation: verify data URL
+                    if (!base64Src || !base64Src.startsWith('data:image/')) {
+                        alert('Invalid image format.');
+                        return;
+                    }
+
                     const newMem = {
-                        title: title,
-                        caption: caption,
+                        title: title.slice(0, 150),
+                        caption: caption.slice(0, 1000),
                         src: base64Src,
                         likes: 0,
                         broken: 0,
@@ -292,7 +308,15 @@ const GalleryModule = (function () {
     }
 
     function escapeHtml(str) {
-        return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;')
+            .replace(/`/g, '&#x60;');
     }
 
     document.addEventListener('DOMContentLoaded', init);
