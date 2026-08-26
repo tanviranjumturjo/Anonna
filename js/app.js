@@ -241,7 +241,7 @@
         const daysEl = document.getElementById('days-count');
         if (!daysEl) return;
 
-        const startDate = new Date(2018, 4, 18);
+        const startDate = new Date(2018, 4, 25);
 
         function calculateDays() {
             const now = new Date();
