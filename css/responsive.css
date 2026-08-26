@@ -78,21 +78,22 @@
         font-size: 1rem;
     }
 
-    .hero-section {
-        padding: 95px 16px 50px;
-        min-height: auto;
+    .hero-main-container {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-bottom: 36px;
     }
 
-    .hero-title {
-        font-size: 2.2rem;
+    .hero-content {
+        text-align: center;
     }
 
-    .hero-subtext {
-        font-size: 1.3rem;
+    .hero-cta-group {
+        justify-content: center;
     }
 
-    .hero-subtitle {
-        font-size: 1.05rem;
+    .hero-warning-card {
+        max-height: none;
     }
 
     .hero-stats {
